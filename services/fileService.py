@@ -5,8 +5,8 @@ from fastapi.responses import FileResponse
 from PIL import Image, ImageFile
 
 
-static_files_path = os.path.join(os.getcwd(), 'static\\files')
-static_assets_path = os.path.join(os.getcwd(), 'static\\assets')
+static_files_path = os.path.join(os.getcwd(), 'static/files')
+static_assets_path = os.path.join(os.getcwd(), 'static/assets')
 
 
 def save_file(file: UploadFile, height: int) -> str:
