@@ -9,7 +9,7 @@ from starlette.types import ASGIApp, Scope, Receive, Send
 app = FastAPI(docs_url=None, redoc_url=None)
 
 origins = [
-    "*"
+    "https://psalterium.herokuapp.com"
 ]
 
 app.add_middleware(
