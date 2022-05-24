@@ -6,7 +6,7 @@ from starlette.types import ASGIApp, Scope, Receive, Send
 
 
 
-app = FastAPI()
+app = FastAPI(docs_url=None, redoc_url=None)
 
 origins = [
     "*"
