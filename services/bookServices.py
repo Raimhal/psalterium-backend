@@ -98,7 +98,7 @@ def set_genres(db: Session, genres: List[schemas.GenreBase], expression: Any):
 
 def change_image(db: Session, image: UploadFile, expression: Any) -> str:
     book = generalServices.get_by_expression(db=db, model=_model, expression=expression)
-    book.image = fileService.save_image(image, 256, 256)
+    book.image = fileService.save_image(image, 512, 512)
     db.commit()
     return book.image
 
