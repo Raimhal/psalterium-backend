@@ -16,7 +16,7 @@ def create_order(db: Session, model: schemas.OrderCreate, current_user: models.U
         user_id=current_user.id,
     )
     db.add(order)
-    expression = and_(models.OrderBook.order_id == 0, models.OrderBook.consumer == current_user)
+    expression = and_(models.OrderBook.order_id == None, models.OrderBook.consumer == current_user)
     order_books = generalServices.get_all_without_limit(db=db, model=models.OrderBook, expression=expression)
     for order_book in order_books:
         order_book.order = order
