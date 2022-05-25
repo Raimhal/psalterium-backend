@@ -10,6 +10,8 @@ from schemas import schemas
 from config.db import Session
 from datetime import datetime
 from . import generalServices, fileService
+from Exceptions import CustomAccessForbiddenException
+
 
 
 _model = models.Book
