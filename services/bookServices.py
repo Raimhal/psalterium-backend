@@ -122,7 +122,8 @@ def delete_book(db: Session, id: int, current_user: models.User):
             db.delete(order)
             if not _order.books:
                 db.delete(_order)
-    fileService.delete_file(book.image)
+    if(book.image != os.environ.get("DEFAULT_BOOK_IMAGE")):
+        fileService.delete_file(book.image)
     db.delete(book)
     db.commit()
 
