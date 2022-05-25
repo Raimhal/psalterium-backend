@@ -106,7 +106,7 @@ def change_image(db: Session, image: UploadFile, expression: Any) -> str:
 
 def delete_book(db: Session, id: int, current_user: models.User):
     book = generalServices.get_by_expression(db=db, model=_model, expression= _model.id == id)
-    if(current_user.role.name != 'Admin' or book.owner_id != current_user.id):
+    if(current_user.role.name != 'Admin' and book.owner_id != current_user.id):
         CustomAccessForbiddenException()
     expression = models.OrderBook.book_id == book.id
     orders = generalServices.get_all_without_limit(db=db, model=models.OrderBook, expression=expression)
