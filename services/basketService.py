@@ -11,7 +11,7 @@ _model = models.OrderBook
 def add_to_basket(db: Session, model: schemas.OrderBookCreate, current_user: models.User) -> int:
     generalServices.check_in_warehouse(db=db, model=models.Book,  id=model.book_id, count=model.count)
     book = generalServices.get_by_expression(db=db, model=models.Book, expression=models.Book.id == model.book_id)
-    order_book = db.query(_model).filter(and_(_model.order_id == 0, _model.book_id == model.book_id)).first()
+    order_book = db.query(_model).filter(and_(_model.order_id == None, _model.book_id == model.book_id)).first()
     book.count -= model.count
     if order_book:
         order_book.count += model.count
@@ -19,7 +19,7 @@ def add_to_basket(db: Session, model: schemas.OrderBookCreate, current_user: mod
         return order_book.id
     else:
         _book = _model(
-            order_id=0,
+            order_id=None,
             consumer=current_user,
             book_id=book.id,
             count=model.count

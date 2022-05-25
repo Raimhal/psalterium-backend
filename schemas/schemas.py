@@ -39,7 +39,7 @@ class OrderBookCreate(OrderBookBase):
 
 class OrderBook(OrderBookBase):
     id: int
-    order_id: int
+    order_id: Optional[str] = None
     consumer_id: int
 
     class Config:

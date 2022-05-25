@@ -19,7 +19,7 @@ _admin_role_name = 'Admin'
 @router.get('', response_model=List[schemas.OrderBook])
 async def basket(skip: int=0, limit: int=10, db: Session = Depends(get_db),
                     current_user: models.User = Depends(get_current_user)):
-    expression = and_(_model.order_id == 0, _model.consumer == current_user)
+    expression = and_(_model.order_id == None, _model.consumer == current_user)
     return generalServices.get_all_with_expression(db=db, model=_model, skip=skip, limit=limit, expression=expression)
 
 
