@@ -1,4 +1,5 @@
 import datetime
+import os
 from typing import List, Any
 from sqlalchemy import and_
 from fastapi import UploadFile
@@ -57,7 +58,8 @@ def create_book(db: Session, model: schemas.BookCreate, current_user: models.Use
         owner=current_user,
         count=model.count,
         publication_date=model.publication_date,
-        ISBN=model.ISBN
+        ISBN=model.ISBN,
+        image=os.environ.get("DEFAULT_BOOK_IMAGE")
     )
     db.add(book)
     db.commit()
@@ -94,35 +96,22 @@ def set_genres(db: Session, genres: List[schemas.GenreBase], expression: Any):
     db.commit()
 
 
-def get_image(db: Session, id: int) -> FileResponse:
-    book = generalServices.get_by_expression(db=db, model=_model, expression=_model.id == id)
-    print(book.image)
-    return fileService.get_file(book.image)
-
-
-def get_image_by_name(name: str) -> FileResponse:
-    return fileService.get_file(name)
-
-
 def change_image(db: Session, image: UploadFile, expression: Any) -> str:
     book = generalServices.get_by_expression(db=db, model=_model, expression=expression)
-    print(book.image)
-    fileService.delete_file(book.image)
-    book.image = fileService.save_file(image, 300)
+    book.image = fileService.save_image(image, 256, 256)
     db.commit()
-    print(book.image)
     return book.image
 
 
 
 def delete_book(db: Session, id: int, current_user: models.User):
     book = generalServices.get_by_expression(db=db, model=_model, expression= _model.id == id)
-    if(book.owner_id != current_user.id):
+    if(current_user.role.name != 'Admin' or book.owner_id != current_user.id):
         CustomAccessForbiddenException()
     expression = models.OrderBook.book_id == book.id
     orders = generalServices.get_all_without_limit(db=db, model=models.OrderBook, expression=expression)
     for order in orders:
-        if(order.order_id == 0):
+        if(order.order_id == None):
             db.delete(order)
         else:
             expression = models.Order.id == order.order_id
@@ -133,6 +122,7 @@ def delete_book(db: Session, id: int, current_user: models.User):
             db.delete(order)
             if not _order.books:
                 db.delete(_order)
+    fileService.delete_file(book.image)
     db.delete(book)
     db.commit()
 
