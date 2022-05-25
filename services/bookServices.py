@@ -113,8 +113,10 @@ def change_image(db: Session, image: UploadFile, expression: Any) -> str:
 
 
 
-def delete_book(db: Session, id: int):
+def delete_book(db: Session, id: int, current_user: models.User):
     book = generalServices.get_by_expression(db=db, model=_model, expression= _model.id == id)
+    if(book.owner_id != current_user.id):
+        CustomAccessForbiddenException()
     expression = models.OrderBook.book_id == book.id
     orders = generalServices.get_all_without_limit(db=db, model=models.OrderBook, expression=expression)
     for order in orders:
