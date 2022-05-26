@@ -46,5 +46,5 @@ async def create_order(orderCreate: schemas.OrderCreate, db: Session = Depends(g
 @router.delete('/{id:int}/delete', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_order(id: int, db: Session = Depends(get_db),
                             current_user: models.User = Depends(get_current_user)):
-    orderServices.delete_order(db=db, id=id)
+    orderServices.delete_order(db=db, id=id, current_user=current_user)
 

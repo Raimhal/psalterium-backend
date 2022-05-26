@@ -73,21 +73,21 @@ async def create_book(bookCreate: schemas.BookCreate,db: Session = Depends(get_d
 async def update_book(id: int, bookUpdate: schemas.BookCreate,
                       db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
     expression = _model.id == id
-    bookServices.update_book(db=db, model=bookUpdate, expression=expression)
+    bookServices.update_book(db=db, model=bookUpdate, expression=expression, current_user=current_user)
 
 
 @router.patch('/{id:int}/set_genres', status_code=status.HTTP_204_NO_CONTENT)
 async def set_genres(id: int, genres: List[schemas.GenreBase], db: Session = Depends(get_db),
                             current_user: models.User = Depends(get_current_user)):
     expression = _model.id == id
-    bookServices.set_genres(db=db, genres=genres, expression=expression)
+    bookServices.set_genres(db=db, genres=genres, expression=expression, current_user=current_user)
 
 
 @router.patch('/{id:int}/change_image', response_model=str)
 async def change_image(id: int, db: Session = Depends(get_db), file: UploadFile = File(...),
                        current_user: models.User = Depends(get_current_user)):
     expression = _model.id == id
-    return bookServices.change_image(db=db, image=file, expression=expression)
+    return bookServices.change_image(db=db, image=file, expression=expression, current_user=current_user)
 
 
 @router.delete('/{id}/delete', status_code=status.HTTP_204_NO_CONTENT)
