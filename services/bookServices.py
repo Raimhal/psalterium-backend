@@ -66,8 +66,11 @@ def create_book(db: Session, model: schemas.BookCreate, current_user: models.Use
     return book.id
 
 
-def update_book(db: Session, model: schemas.BookCreate, expression: Any):
+def update_book(db: Session, model: schemas.BookCreate, expression: Any, current_user: models.User):
     book = generalServices.get_by_expression(db=db, model=_model, expression=expression)
+
+    if(current_user.role.name != 'Admin' and book.owner_id != current_user.id):
+        CustomAccessForbiddenException()
 
     book.name = model.name
     book.author = model.author
@@ -83,8 +86,10 @@ def update_book(db: Session, model: schemas.BookCreate, expression: Any):
     db.commit()
 
 
-def set_genres(db: Session, genres: List[schemas.GenreBase], expression: Any):
+def set_genres(db: Session, genres: List[schemas.GenreBase], expression: Any, current_user: models.User):
     book = generalServices.get_by_expression(db=db, model=_model, expression=expression)
+    if(current_user.role.name != 'Admin' and book.owner_id != current_user.id):
+        CustomAccessForbiddenException()
     book.genres = [
         generalServices.get_by_expression(
             db=db,
@@ -96,8 +101,10 @@ def set_genres(db: Session, genres: List[schemas.GenreBase], expression: Any):
     db.commit()
 
 
-def change_image(db: Session, image: UploadFile, expression: Any) -> str:
+def change_image(db: Session, image: UploadFile, expression: Any, current_user: models.User) -> str:
     book = generalServices.get_by_expression(db=db, model=_model, expression=expression)
+    if(current_user.role.name != 'Admin' and book.owner_id != current_user.id):
+        CustomAccessForbiddenException()
     book.image = fileService.save_image(image, 512, 512)
     db.commit()
     return book.image
