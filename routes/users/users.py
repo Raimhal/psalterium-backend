@@ -51,7 +51,7 @@ async def update_user_by_id(id: int, userUpdate: schemas.UserCreate, db: Session
                             current_user: models.User = Depends(get_current_user)):
     expression = _model.id == id
     if current_user.role.name == _admin_role_name:
-        return userServices.update_user(db=db, model=userUpdate, expression=expression)
+        return userServices.update_user(db=db, model=userUpdate, expression=expression, current_user=current_user)
 
     if not current_user.id == id: CustomAccessForbiddenException()
     else:

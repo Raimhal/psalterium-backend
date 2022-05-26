@@ -53,7 +53,7 @@ def change_user_role(db: Session, user_id: int, role_name: str, current_user: mo
 
     user = generalServices.get_by_expression(db=db, model=_model, expression=_model.id == user_id)
 
-    if(current_user.role.name != 'Admin' and user.id != current_user.id):
+    if(current_user.role.name != 'Admin'):
          CustomAccessForbiddenException()
 
     role = generalServices.get_by_expression(
