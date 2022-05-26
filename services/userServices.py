@@ -51,10 +51,11 @@ def update_user(db: Session, model: schemas.UserCreate, expression: bool, curren
 
 def change_user_role(db: Session, user_id: int, role_name: str, current_user: models.User):
 
-    if(current_user.role.name != 'Admin' and user_id != current_user.id):
-            CustomAccessForbiddenException()
-
     user = generalServices.get_by_expression(db=db, model=_model, expression=_model.id == user_id)
+
+    if(current_user.role.name != 'Admin' and user.id != current_user.id):
+         CustomAccessForbiddenException()
+
     role = generalServices.get_by_expression(
         db=db,
         model=_role_model,
