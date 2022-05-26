@@ -55,7 +55,7 @@ async def update_user_by_id(id: int, userUpdate: schemas.UserCreate, db: Session
 
     if not current_user.id == id: CustomAccessForbiddenException()
     else:
-        userServices.update_user(db=db, model=userUpdate, expression=expression)
+        userServices.update_user(db=db, model=userUpdate, expression=expression, current_user=current_user)
 
 
 @router.put('/email/update', status_code=status.HTTP_204_NO_CONTENT)
@@ -63,21 +63,28 @@ async def update_user_by_email(email: str, userUpdate: schemas.UserCreate, db: S
                                current_user: models.User = Depends(get_current_user)):
     expression = _model.email == email
     if current_user.role.name == _admin_role_name:
-        return userServices.update_user(db=db, model=userUpdate, expression=expression)
+        return userServices.update_user(
+            db=db,
+            model=userUpdate,
+            expression=expression,
+            current_user=current_user
+        )
 
-    if not current_user.email == email: CustomAccessForbiddenException()
+    if not current_user.email == email:
+        CustomAccessForbiddenException()
     else:
-        userServices.update_user(db=db, model=userUpdate, expression=expression)
+        userServices.update_user(db=db, model=userUpdate, expression=expression, current_user=current_user)
 
 
 @router.patch('/{id:int}/change_role', status_code=status.HTTP_204_NO_CONTENT)
-async def change_role(id: int, role_name: str, db: Session = Depends(get_db)):
-    userServices.change_user_role(db=db, user_id=id, role_name=role_name)
+async def change_role(id: int, role_name: str, db: Session = Depends(get_db),
+                            current_user: models.User = Depends(get_current_user)):
+    userServices.change_user_role(db=db, user_id=id, role_name=role_name, current_user=current_user)
 
 
 @router.delete('/{id:int}/delete', status_code=status.HTTP_204_NO_CONTENT)
 @raise_403_if_not_admin
 async def delete_user_by_id(id: int, db: Session = Depends(get_db),
                             current_user: models.User = Depends(get_current_user)):
-    userServices.delete_user(db=db, id=id)
+    userServices.delete_user(db=db, id=id, current_user=current_user)
 

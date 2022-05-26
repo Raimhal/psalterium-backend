@@ -35,8 +35,13 @@ def create_user(db: Session, model: schemas.UserCreate) -> int:
     return user.id
 
 
-def update_user(db: Session, model: schemas.UserCreate, expression: bool):
+def update_user(db: Session, model: schemas.UserCreate, expression: bool, current_user: models.User):
+
     user = generalServices.get_by_expression(db=db, model=_model, expression=expression)
+
+    if(current_user.role.name != 'Admin' and user.id != current_user.id):
+         CustomAccessForbiddenException()
+
     user.username = model.username
     user.first_name = model.first_name
     user.last_name = model.last_name
@@ -44,7 +49,11 @@ def update_user(db: Session, model: schemas.UserCreate, expression: bool):
         user.password = securityServices.get_password_hash(model.password)
     db.commit()
 
-def change_user_role(db: Session, user_id: int, role_name: str):
+def change_user_role(db: Session, user_id: int, role_name: str, current_user: models.User):
+
+    if(current_user.role.name != 'Admin' and user_id != current_user.id):
+            CustomAccessForbiddenException()
+
     user = generalServices.get_by_expression(db=db, model=_model, expression=_model.id == user_id)
     role = generalServices.get_by_expression(
         db=db,
@@ -57,7 +66,7 @@ def change_user_role(db: Session, user_id: int, role_name: str):
 def delete_user(db: Session, id: int, current_user: models.User):
     user = generalServices.get_by_expression(db=db, model=_model, expression=_model.id == id)
 
-    if(current_user.role.name != 'Admin' or id != current_user.id):
+    if(current_user.role.name != 'Admin' and id != current_user.id):
         CustomAccessForbiddenException()
 
     for book in user.books:
