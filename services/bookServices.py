@@ -105,6 +105,10 @@ def change_image(db: Session, image: UploadFile, expression: Any, current_user: 
     book = generalServices.get_by_expression(db=db, model=_model, expression=expression)
     if(current_user.role.name != 'Admin' and book.owner_id != current_user.id):
         CustomAccessForbiddenException()
+
+    if (book.image != os.environ.get("DEFAULT_BOOK_IMAGE")):
+        fileService.delete_file(book.image)
+
     book.image = fileService.save_image(image, 512, 512)
     db.commit()
     return book.image

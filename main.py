@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI
 from routes import router
 from config import dependencies
@@ -7,10 +9,11 @@ from starlette.types import ASGIApp, Scope, Receive, Send
 
 
 app = FastAPI()
-# app = FastAPI(docs_url=None, redoc_url=None)
+app = FastAPI(docs_url=None, redoc_url=None)
 
 origins = [
-    "*"
+    "http://localhost",
+    os.environ.get("FRONTEND_URL")
 ]
 
 app.add_middleware(
